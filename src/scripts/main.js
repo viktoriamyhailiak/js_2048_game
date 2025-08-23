@@ -19,6 +19,7 @@ startButton.addEventListener('click', (e) => {
     e.target.innerHTML = 'Restart';
     e.target.classList.remove('start');
     e.target.classList.add('restart');
+    game.start();
   } else {
     startMessage.classList.remove('hidden');
     e.target.innerHTML = 'Start';
@@ -27,6 +28,8 @@ startButton.addEventListener('click', (e) => {
     game.score = 0;
     score.innerHTML = 0;
     game.restart();
+    game.initialState = 'idle';
+    clearErrors();
   }
 });
 
@@ -38,6 +41,11 @@ function checkStatus() {
   if (game.getStatus() === 'lose') {
     loseMessage.classList.remove('hidden');
   }
+}
+
+function clearErrors() {
+  winMessage.classList.add('hidden');
+  loseMessage.classList.add('hidden');
 }
 
 export const control = (e) => {

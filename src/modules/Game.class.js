@@ -46,8 +46,6 @@ class Game {
       this.squares[i].innerHTML = 0;
     }
 
-    this.generate();
-    this.generate();
     this.addColors();
   }
 
@@ -224,6 +222,9 @@ class Game {
    */
   start() {
     this.initialState = 'playing';
+    this.generate();
+    this.generate();
+    this.addColors();
   }
 
   restart() {
