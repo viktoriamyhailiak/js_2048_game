@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   game.beforeStart();
 });
 
-startButton.addEventListener('click', (e) => {
+function StartRestart(e) {
   if (e.target.innerHTML === 'Start') {
     startMessage.classList.add('hidden');
     e.target.innerHTML = 'Restart';
@@ -31,7 +31,9 @@ startButton.addEventListener('click', (e) => {
     game.initialState = 'idle';
     clearErrors();
   }
-});
+}
+
+startButton.addEventListener('click', (e) => StartRestart(e));
 
 function checkStatus() {
   if (game.getStatus() === 'win') {
@@ -66,7 +68,11 @@ export const control = (e) => {
 
       return;
     }
-    game.generate();
+
+    if (game.didMove) {
+      game.generate();
+    }
+
     game.addColors();
 
     checkStatus();
@@ -76,7 +82,11 @@ export const control = (e) => {
     game.moveLeft();
     game.combineRow();
     game.moveLeft();
-    game.generate();
+
+    if (game.didMove) {
+      game.generate();
+    }
+
     game.addColors();
 
     checkStatus();
@@ -86,7 +96,11 @@ export const control = (e) => {
     game.moveUp();
     game.combineColumn();
     game.moveUp();
-    game.generate();
+
+    if (game.didMove) {
+      game.generate();
+    }
+
     game.addColors();
 
     checkStatus();
@@ -96,7 +110,11 @@ export const control = (e) => {
     game.moveDown();
     game.combineColumn();
     game.moveDown();
-    game.generate();
+
+    if (game.didMove) {
+      game.generate();
+    }
+
     game.addColors();
 
     checkStatus();

@@ -18,15 +18,15 @@ class Game {
     this.score = 0;
     this.width = 4;
     this.squares = document.getElementsByClassName('field-cell');
-    this.generateCount = 0;
+    this.didMove = false;
   }
 
-  generate() {
+  generate(firstValue = false) {
     const emptyExists = Array.from(this.squares).some(
       (s) => s.innerHTML === '0',
     );
 
-    if (!emptyExists) {
+    if (!emptyExists || (!this.didMove && !firstValue)) {
       return;
     }
 
@@ -37,7 +37,7 @@ class Game {
 
       this.squares[randomNumber].innerHTML = String(value);
     } else {
-      this.generate();
+      this.generate(firstValue);
     }
   }
 
@@ -92,6 +92,8 @@ class Game {
   }
 
   moveLeft() {
+    let moved = false;
+
     for (let i = 0; i < 16; i++) {
       if (i % 4 === 0) {
         const first = this.squares[i].innerHTML;
@@ -110,15 +112,23 @@ class Game {
         const zeros = Array(missing).fill(0);
         const newRow = filteredRow.concat(zeros);
 
+        if (!row.every((val, idx) => val === newRow[idx])) {
+          moved = true;
+        }
+
         this.squares[i].innerHTML = newRow[0];
         this.squares[i + 1].innerHTML = newRow[1];
         this.squares[i + 2].innerHTML = newRow[2];
         this.squares[i + 3].innerHTML = newRow[3];
       }
     }
+
+    this.didMove = moved;
   }
 
   moveRight() {
+    let moved = false;
+
     for (let i = 0; i < 16; i++) {
       if (i % 4 === 0) {
         const first = this.squares[i].innerHTML;
@@ -137,15 +147,23 @@ class Game {
         const zeros = Array(missing).fill(0);
         const newRow = zeros.concat(filteredRow);
 
+        if (!row.every((val, idx) => val === newRow[idx])) {
+          moved = true;
+        }
+
         this.squares[i].innerHTML = newRow[0];
         this.squares[i + 1].innerHTML = newRow[1];
         this.squares[i + 2].innerHTML = newRow[2];
         this.squares[i + 3].innerHTML = newRow[3];
       }
     }
+
+    this.didMove = moved;
   }
 
   moveUp() {
+    let moved = false;
+
     for (let i = 0; i < 4; i++) {
       const first = this.squares[i].innerHTML;
       const second = this.squares[i + this.width].innerHTML;
@@ -163,14 +181,22 @@ class Game {
       const zeros = Array(missing).fill(0);
       const newColumn = filteredColumn.concat(zeros);
 
+      if (!column.every((val, idx) => val === newColumn[idx])) {
+        moved = true;
+      }
+
       this.squares[i].innerHTML = newColumn[0];
       this.squares[i + this.width].innerHTML = newColumn[1];
       this.squares[i + this.width * 2].innerHTML = newColumn[2];
       this.squares[i + this.width * 3].innerHTML = newColumn[3];
     }
+
+    this.didMove = moved;
   }
 
   moveDown() {
+    let moved = false;
+
     for (let i = 0; i < 4; i++) {
       const first = this.squares[i].innerHTML;
       const second = this.squares[i + this.width].innerHTML;
@@ -188,11 +214,17 @@ class Game {
       const zeros = Array(missing).fill(0);
       const newColumn = zeros.concat(filteredColumn);
 
+      if (!column.every((val, idx) => val === newColumn[idx])) {
+        moved = true;
+      }
+
       this.squares[i].innerHTML = newColumn[0];
       this.squares[i + this.width].innerHTML = newColumn[1];
       this.squares[i + this.width * 2].innerHTML = newColumn[2];
       this.squares[i + this.width * 3].innerHTML = newColumn[3];
     }
+
+    this.didMove = moved;
   }
 
   getScore() {
@@ -222,8 +254,8 @@ class Game {
    */
   start() {
     this.initialState = 'playing';
-    this.generate();
-    this.generate();
+    this.generate(true);
+    this.generate(true);
     this.addColors();
   }
 
@@ -233,7 +265,11 @@ class Game {
 
   combineRow() {
     for (let i = 0; i < 15; i++) {
-      if (this.squares[i].innerHTML === this.squares[i + 1].innerHTML) {
+      if (
+        this.squares[i].innerHTML !== '0' &&
+        this.squares[i].innerHTML === this.squares[i + 1].innerHTML &&
+        i % 4 !== 3
+      ) {
         const combined =
           parseInt(this.squares[i].innerHTML) +
           parseInt(this.squares[i + 1].innerHTML);
@@ -242,8 +278,11 @@ class Game {
         this.squares[i + 1].innerHTML = 0;
         this.score += combined;
         score.innerHTML = this.score;
+
+        this.didMove = true;
       }
     }
+
     this.checkIfWin();
     this.checkIfLose();
   }
@@ -251,6 +290,7 @@ class Game {
   combineColumn() {
     for (let i = 0; i < 12; i++) {
       if (
+        this.squares[i].innerHTML !== '0' &&
         this.squares[i].innerHTML === this.squares[i + this.width].innerHTML
       ) {
         const combined =
@@ -261,8 +301,11 @@ class Game {
         this.squares[i + this.width].innerHTML = 0;
         this.score += combined;
         score.innerHTML = this.score;
+
+        this.didMove = true;
       }
     }
+
     this.checkIfWin();
     this.checkIfLose();
   }
