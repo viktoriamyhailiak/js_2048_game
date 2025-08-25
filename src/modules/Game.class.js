@@ -59,19 +59,44 @@ class Game {
     }
   }
 
-  checkIfLose() {
-    let zeros = 0;
+  // checkIfLose() {
+  //   let zeros = 0;
 
+  //   for (let i = 0; i < 16; i++) {
+  //     if (this.squares[i].innerHTML === '0') {
+  //       zeros++;
+  //     }
+  //   }
+
+  //   if (zeros === 0) {
+  //     this.initialState = 'lose';
+  //     document.removeEventListener('keydown', control);
+  //   }
+  // }
+
+  checkIfLose() {
     for (let i = 0; i < 16; i++) {
       if (this.squares[i].innerHTML === '0') {
-        zeros++;
+        return;
       }
     }
 
-    if (zeros === 0) {
-      this.initialState = 'lose';
-      document.removeEventListener('keydown', control);
+    for (let i = 0; i < 16; i++) {
+      if (i % 4 !== 3) {
+        if (this.squares[i].innerHTML === this.squares[i + 1].innerHTML) {
+          return;
+        }
+      }
     }
+
+    for (let i = 0; i < 12; i++) {
+      if (this.squares[i].innerHTML === this.squares[i + 4].innerHTML) {
+        return;
+      }
+    }
+
+    this.initialState = 'lose';
+    document.removeEventListener('keydown', control);
   }
 
   addColors() {
