@@ -7,7 +7,8 @@ const startButton = document.querySelector('.start');
 const winMessage = document.querySelector('.message-win');
 const loseMessage = document.querySelector('.message-lose');
 const startMessage = document.querySelector('.message-start');
-const score = document.querySelector('.game-score');
+
+startButton.addEventListener('click', (e) => StartRestart(e));
 
 document.addEventListener('DOMContentLoaded', () => {
   game.beforeStart();
@@ -25,15 +26,10 @@ function StartRestart(e) {
     e.target.innerHTML = 'Start';
     e.target.classList.remove('restart');
     e.target.classList.add('start');
-    game.score = 0;
-    score.innerHTML = 0;
     game.restart();
-    game.initialState = 'idle';
     clearErrors();
   }
 }
-
-startButton.addEventListener('click', (e) => StartRestart(e));
 
 function checkStatus() {
   if (game.getStatus() === 'win') {
@@ -50,18 +46,29 @@ function clearErrors() {
   loseMessage.classList.add('hidden');
 }
 
-export const control = (e) => {
-  if (e.key && !startMessage.classList.contains('hidden')) {
+const allowedKeys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
+
+const control = async (e) => {
+  if (
+    allowedKeys.includes(e.key) &&
+    !startMessage.classList.contains('hidden')
+  ) {
     startMessage.classList.add('hidden');
     startButton.innerHTML = 'Restart';
     startButton.classList.remove('start');
     startButton.classList.add('restart');
+    game.start();
+
+    return;
   }
 
   if (e.key === 'ArrowRight') {
+    game.didMove = false;
     game.moveRight();
-    game.combineRow();
-    game.moveRight();
+    game.combineRow('right');
+    game.generate();
+    game.didMove = false;
+    game.addColors();
 
     if (game.initialState === 'lose') {
       loseMessage.classList.remove('hidden');
@@ -69,56 +76,43 @@ export const control = (e) => {
       return;
     }
 
-    if (game.didMove) {
-      game.generate();
-    }
-
-    game.addColors();
-
     checkStatus();
   }
 
   if (e.key === 'ArrowLeft') {
+    game.didMove = false;
     game.moveLeft();
-    game.combineRow();
-    game.moveLeft();
-
-    if (game.didMove) {
-      game.generate();
-    }
-
+    game.combineRow('left');
+    game.generate();
+    game.didMove = false;
     game.addColors();
 
     checkStatus();
   }
 
   if (e.key === 'ArrowUp') {
+    game.didMove = false;
     game.moveUp();
-    game.combineColumn();
-    game.moveUp();
-
-    if (game.didMove) {
-      game.generate();
-    }
-
+    game.combineColumn('up');
+    game.generate();
+    game.didMove = false;
     game.addColors();
 
     checkStatus();
   }
 
   if (e.key === 'ArrowDown') {
+    game.didMove = false;
     game.moveDown();
-    game.combineColumn();
-    game.moveDown();
-
-    if (game.didMove) {
-      game.generate();
-    }
-
+    game.combineColumn('down');
+    game.generate();
+    game.didMove = false;
     game.addColors();
 
     checkStatus();
   }
 };
+
+export { control };
 
 document.addEventListener('keydown', control);

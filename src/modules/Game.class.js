@@ -235,23 +235,10 @@ class Game {
     return this.board.map((row) => [...row]);
   }
 
-  /**
-   * Returns the current game status.
-   *
-   * @returns {string} One of: 'idle', 'playing', 'win', 'lose'
-   *
-   * `idle` - the game has not started yet (the initial state);
-   * `playing` - the game is in progress;
-   * `win` - the game is won;
-   * `lose` - the game is lost
-   */
   getStatus() {
     return this.initialState;
   }
 
-  /**
-   * Starts the game.
-   */
   start() {
     this.initialState = 'playing';
     this.generate(true);
@@ -261,9 +248,12 @@ class Game {
 
   restart() {
     this.beforeStart();
+    this.initialState = 'idle';
+    this.score = 0;
+    score.innerHTML = 0;
   }
 
-  combineRow() {
+  combineRow(move) {
     for (let i = 0; i < 15; i++) {
       if (
         this.squares[i].innerHTML !== '0' &&
@@ -283,11 +273,25 @@ class Game {
       }
     }
 
+    const previousDidMove = this.didMove;
+
     this.checkIfWin();
     this.checkIfLose();
+
+    if (move === 'right') {
+      this.moveRight();
+    }
+
+    if (move === 'left') {
+      this.moveLeft();
+    }
+
+    if (previousDidMove !== this.didMove) {
+      this.didMove = previousDidMove;
+    }
   }
 
-  combineColumn() {
+  combineColumn(move) {
     for (let i = 0; i < 12; i++) {
       if (
         this.squares[i].innerHTML !== '0' &&
@@ -306,8 +310,22 @@ class Game {
       }
     }
 
+    const previousDidMove = this.didMove;
+
     this.checkIfWin();
     this.checkIfLose();
+
+    if (move === 'up') {
+      this.moveUp();
+    }
+
+    if (move === 'down') {
+      this.moveDown();
+    }
+
+    if (previousDidMove !== this.didMove) {
+      this.didMove = previousDidMove;
+    }
   }
 }
 
